@@ -1,6 +1,9 @@
 package cloudformation
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestCreateStack(t *testing.T) {
 	type args struct {
@@ -14,7 +17,7 @@ func TestCreateStack(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "valid", args: args{
-			stackName: "awsgrips_test_log_group",
+			stackName: "awsgrips-test-log-group",
 			stackFile: "/Users/nmarks/go/src/github.com/natemarks/awsgrips/assets/cfntemplates/testloggroup.json",
 		}, wantErr: false,
 			want: "sdf"},
@@ -26,8 +29,16 @@ func TestCreateStack(t *testing.T) {
 				t.Errorf("CreateStack() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("CreateStack() got = %v, want %v", got, tt.want)
+			if !strings.Contains(got, tt.args.stackName) {
+				t.Errorf("StackId does not contain stackName")
+			}
+			err = CreateStackWait(tt.args.stackName, 10)
+			if err != nil {
+				t.Errorf("Error waiting for stack to complete: %s", tt.args.stackName)
+			}
+			err = DeleteStack(tt.args.stackName)
+			if err != nil {
+				t.Errorf("unable to delete stack: %s", tt.args.stackName)
 			}
 		})
 	}
