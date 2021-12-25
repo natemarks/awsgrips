@@ -1,0 +1,25 @@
+{
+  "Resources": {
+    "TestLogGroup": {
+      "Type" : "AWS::Logs::LogGroup",
+      "Properties" : {
+        "LogGroupName" : "awsgrips_test",
+        "RetentionInDays" : 7,
+        "Tags": [
+          {
+            "Key" : "Project",
+            "Value" : "awsgrips"
+          },
+          {
+            "Key" : "GithubUrl",
+            "Value" : "https://github.com/natemarks/awsgrips"
+          },
+          {
+            "Key" : "Description",
+            "Value" : "test run log output"
+          }
+        ]
+      }
+    }
+  }
+}
