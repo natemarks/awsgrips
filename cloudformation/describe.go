@@ -2,13 +2,15 @@ package cloudformation
 
 import (
 	"context"
+	"strings"
+
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
-	"strings"
 )
 
-// GetStackByNameSubstring restore a given snapshot to a given instnace namd
+// GetStackByNameSubstring Given a partial (substring) name of a stack, return a
+// slice of stack object where each stack name contains the given substring
 func GetStackByNameSubstring(sub string) ([]types.Stack, error) {
 	var result []types.Stack
 	cfg, err := config.LoadDefaultConfig(context.TODO())

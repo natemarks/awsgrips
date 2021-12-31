@@ -23,7 +23,7 @@ func TestGetStackByNameSubstring1(t *testing.T) {
 				return
 			}
 			if len(got) < 1 {
-				t.Error("no matchingstacks found")
+				t.Error("no matching stacks found")
 			}
 		})
 	}

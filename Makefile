@@ -60,11 +60,11 @@ vet:
 	@go vet ${PKG_LIST}
 
 goimports: ## check imports
-	go get -u golang.org/x/tools/cmd/goimports
+	go get -d golang.org/x/tools/cmd/goimports
 	goimports -w .
 
 lint:  ##  run golint
-	go get -u golang.org/x/lint/golint
+	go get -d golang.org/x/lint/golint
 	@for file in ${GO_FILES} ;  do \
 		golint $$file ; \
 	done
@@ -73,7 +73,7 @@ fmt: ## run gofmt
 	@go fmt ${PKG_LIST}
 
 gocyclo: # run cyclomatic complexity check
-	go get -u github.com/fzipp/gocyclo/cmd/gocyclo
+	go get -d github.com/fzipp/gocyclo/cmd/gocyclo
 	gocyclo -top 10 .
 
 static: goimports fmt vet lint gocyclo test
@@ -106,4 +106,6 @@ git-status: ## require status is clean so we can use undo_edits to put things ba
 rebase: git-status ## rebase current feature branch on to the default branch
 	git fetch && git rebase origin/$(DEFAULT_BRANCH)
 
+godoc: ## run godoc server : http://localhost:6060/pkg/github.com/natemarks/awsgrips/
+	godoc -http=:6060
 .PHONY: build release static upload vet lint fmt gocyclo goimports test

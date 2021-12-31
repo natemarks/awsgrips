@@ -2,12 +2,13 @@ package cloudformation
 
 import (
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/cloudformation"
 )
 
-// DeleteStack restore a given snapshot to a given instnace namd
+// DeleteStack Given a stack name, delete the stack
 func DeleteStack(stackName string) error {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
