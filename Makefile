@@ -53,6 +53,9 @@ release: git-status build
 	  done \
     done ; \
 
+unittest: ## run test that don't require deployed resources
+	go test -v ./... -tags unit
+
 test:
 	@go test -v ${PKG_LIST}
 
