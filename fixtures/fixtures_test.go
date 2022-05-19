@@ -1,4 +1,6 @@
+//go:build !unit
 // +build !unit
+
 package fixtures
 
 import (

@@ -57,29 +57,22 @@ unittest: ## run test that don't require deployed resources
 	go test -v ./... -tags unit
 
 test:
-	@go test -v ${PKG_LIST}
-
-vet:
-	@go vet ${PKG_LIST}
-
-goimports: ## check imports
-	go get -d golang.org/x/tools/cmd/goimports
-	goimports -w .
+	@go test -v ./...
 
 lint:  ##  run golint
-	go get -d golang.org/x/lint/golint
-	@for file in ${GO_FILES} ;  do \
-		golint $$file ; \
-	done
+	( \
+			 go install golang.org/x/lint/golint@latest; \
+			 golint ./...; \
+    )
 
-fmt: ## run gofmt
-	@go fmt ${PKG_LIST}
 
-gocyclo: # run cyclomatic complexity check
-	go get -d github.com/fzipp/gocyclo/cmd/gocyclo
-	gocyclo -top 10 .
-
-static: goimports fmt vet lint gocyclo test
+static: ## run black and pylint
+	( \
+			 gofmt -w  -s .; \
+			 test -z $(go vet ./...); \
+			 goimports -w .; \
+			 test -z $(gocyclo -over 25 .); \
+    )
 
 clean:
 	-@rm ${OUT} ${OUT}-v*
