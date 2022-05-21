@@ -1,37 +1,50 @@
 package testfunctions
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-// getProjectPath return the absolut path to awsgrips
-// example:
-// sep + filepath.Join(result...) + sep
-// '/Users/nmarks/go/src/github.com/natemarks/awsgrips'
-func getProjectPath() string {
-	var found bool = false
-	var result []string
-	sep := string(os.PathSeparator)
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	words := strings.Split(wd, sep)
+// FirstAncestorDir given workingDir and targetDir retrun nearest ancestor
+// workingDir: /aaa/bbb/ccc/my_target/ggg/hhh/my_target/jjj
+// targetDir: my_target
+// return : /aaa/bbb/ccc/my_target/ggg/hhh/my_target/
+func FirstAncestorDir(workingDir, targetDir string) (result string, err error) {
 
-	for _, word := range words {
-		result = append(result, word)
-		if word == "awsgrips" {
-			found = true
+	sep := string(os.PathSeparator)
+	words := strings.Split(workingDir, sep)
+
+	word := words[len(words)-1]
+	for word != targetDir {
+		words = words[:len(words)-1]
+		word = words[len(words)-1]
+		if len(words) == 0 {
 			break
 		}
 	}
-	if !found {
-		return ""
+	if len(words) == 0 {
+		msg := fmt.Sprintf("target not found in parent directories: %s", targetDir)
+		return "", errors.New(msg)
 	}
-	return sep + filepath.Join(result...) + sep
+	return sep + filepath.Join(words...) + sep, err
+}
+
+// getProjectPath return the local,  absolute path to awsgrips
+// example:
+// '/Users/nmarks/go/src/github.com/natemarks/awsgrips'
+func getProjectPath() string {
+	var result string
+	var err error
+	wd, _ := os.Getwd()
+	result, err = FirstAncestorDir(wd, "awsgrips")
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 // JSONFileToByteArray Given a filePath, return the contents as a byte array
