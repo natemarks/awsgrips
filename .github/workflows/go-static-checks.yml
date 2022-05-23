@@ -31,7 +31,3 @@ jobs:
         run: |
           go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
           test -z $(gocyclo -over 25 .)
-      
-      - name: unittest
-        run: |
-          make unittest
