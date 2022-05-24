@@ -1,6 +1,3 @@
-//go:build !unit
-// +build !unit
-
 package cloudformation
 
 import (
@@ -13,6 +10,10 @@ import (
 )
 
 func TestCreateStack(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping testing in short mode")
+	}
+
 	type args struct {
 		input *cloudformation.CreateStackInput
 	}
@@ -62,6 +63,10 @@ func TestCreateStack(t *testing.T) {
 }
 
 func TestCreateStackInputFromHTTP(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping testing in short mode")
+	}
+
 	type args struct {
 		httpUrl string
 	}
@@ -90,6 +95,10 @@ func TestCreateStackInputFromHTTP(t *testing.T) {
 }
 
 func TestCreateStackInputFromS3(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping testing in short mode")
+	}
+
 	type args struct {
 		s3Url string
 	}

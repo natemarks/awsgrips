@@ -53,11 +53,11 @@ release: git-status build
 	  done \
     done ; \
 
-unittest: ## run test that don't require deployed resources
-	go test -v ./... -tags unit
+shorttest: ## run test that don't require deployed resources
+	go test -v ./... -short
 
 test:
-	@go test -v ./...
+	go test -v ./...
 
 lint:  ##  run golint
 	( \
