@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
-func CreateSecretHand(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
+func CreateSecret(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err

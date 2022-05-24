@@ -65,7 +65,7 @@ func TestGetSecret(t *testing.T) {
 		}
 
 		t.Run(tt.name, func(t *testing.T) {
-			cso, err := secrets.CreateSecretHand(&createInput)
+			cso, err := secrets.CreateSecret(&createInput)
 			if err != nil {
 				t.Error("Failed to create secret")
 			}
