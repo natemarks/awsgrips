@@ -13,7 +13,7 @@ func TestCreateStack(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping testing in short mode")
 	}
-	
+
 	type args struct {
 		input *cloudformation.CreateStackInput
 	}
@@ -66,7 +66,7 @@ func TestCreateStackInputFromHTTP(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping testing in short mode")
 	}
-	
+
 	type args struct {
 		httpUrl string
 	}
@@ -98,7 +98,7 @@ func TestCreateStackInputFromS3(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping testing in short mode")
 	}
-	
+
 	type args struct {
 		s3Url string
 	}
