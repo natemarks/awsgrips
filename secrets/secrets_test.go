@@ -97,3 +97,23 @@ func TestSecretFunctions(t *testing.T) {
 		})
 	}
 }
+
+func TestListSecrets(t *testing.T) {
+	tests := []struct {
+		name           string
+		wantErr        bool
+	}{
+		{name: "valid",
+		wantErr: false,
+	},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := secrets.ListSecrets()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListSecrets() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+		})
+	}
+}
