@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
-func CreateSecretString(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
+func CreateSecretHand(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err
@@ -35,7 +35,6 @@ func GetSecret(secretId string) (secret string, err error) {
 	result, err := client.GetSecretValue(context.TODO(), input)
 	return *result.SecretString, err
 }
-
 
 // DeleteSecret
 func DeleteSecret(input *secretsmanager.DeleteSecretInput) (output *secretsmanager.DeleteSecretOutput, err error) {

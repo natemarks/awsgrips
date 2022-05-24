@@ -40,16 +40,14 @@ func TestGetSecret(t *testing.T) {
 		wantSecret testSecret
 		wantErr    bool
 	}{
-		{name: "valid", args: args{
-			secretId: "postgr8testsecret803A87AE-u7jn4kw1cvgvxcf",
-		},
+		{name: "valid",
 			wantSecret: testSecretData,
 			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {
 		now := time.Now()
-		secretId := fmt.Sprintf("postg8-test-%s", fmt.Sprint(now.UnixMilli()))
+		secretId := fmt.Sprintf("postgr8-test-%s", fmt.Sprint(now.UnixMilli()))
 
 		testSecret, err := json.Marshal(testSecretData)
 		if err != nil {
@@ -62,17 +60,17 @@ func TestGetSecret(t *testing.T) {
 		}
 
 		var deleteInput = secretsmanager.DeleteSecretInput{
-			SecretId:                   &secretId,
+			SecretId:                   aws.String(secretId),
 			ForceDeleteWithoutRecovery: true,
 		}
 
 		t.Run(tt.name, func(t *testing.T) {
-			cso, err := secrets.CreateSecretString(&createInput)
+			cso, err := secrets.CreateSecretHand(&createInput)
 			if err != nil {
 				t.Error("Failed to create secret")
 			}
 			t.Log(cso.ARN)
-			gotSecret, err := secrets.GetSecret(tt.args.secretId)
+			gotSecret, err := secrets.GetSecret(secretId)
 			if err != nil {
 				t.Error("Failed to unmarshall JSON secret")
 			}
