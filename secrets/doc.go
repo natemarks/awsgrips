@@ -1,2 +1,2 @@
-// Package secretsmanager contains secretsmanager wrapper functions
+// Package secrets contains secretsmanager wrapper functions
 package secrets

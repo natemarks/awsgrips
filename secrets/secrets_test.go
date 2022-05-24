@@ -21,6 +21,8 @@ type testSecret struct {
 	Port     int    `json:"port"`
 }
 
+// define a test secret data object to create. This will be converted to JSON
+// and saved as a string
 var testSecretData = testSecret{
 	Username: "my_db_username",
 	Password: "my_db_password",
@@ -28,18 +30,18 @@ var testSecretData = testSecret{
 	Host:     "my_db_hostname",
 	Port:     5432,
 }
+
+// define a variable to store the output of GetSecret
 var gotTestData testSecret
 
-func TestGetSecret(t *testing.T) {
-	type args struct {
-		secretId string
-	}
+// TestSecretFunctions create/read/delete a JSON string secret
+func TestSecretFunctions(t *testing.T) {
 	tests := []struct {
 		name       string
-		args       args
 		wantSecret testSecret
 		wantErr    bool
 	}{
+		// Just a single test case
 		{name: "valid",
 			wantSecret: testSecretData,
 			wantErr:    false,
@@ -47,30 +49,34 @@ func TestGetSecret(t *testing.T) {
 	}
 	for _, tt := range tests {
 		now := time.Now()
-		secretId := fmt.Sprintf("postgr8-test-%s", fmt.Sprint(now.UnixMilli()))
+		secretId := fmt.Sprintf("awsgrips-secret-test-%s", fmt.Sprint(now.UnixMilli()))
 
+		// marshall test data object
 		testSecret, err := json.Marshal(testSecretData)
 		if err != nil {
 			t.Error("failed to marshall testSecretData")
 		}
-
+		// generate CreateSecret params
 		var createInput = secretsmanager.CreateSecretInput{
 			Name:         aws.String(secretId),
 			SecretString: aws.String(string(testSecret)),
 		}
 
+		// generate DeleteSecret params
 		var deleteInput = secretsmanager.DeleteSecretInput{
 			SecretId:                   aws.String(secretId),
 			ForceDeleteWithoutRecovery: true,
 		}
 
 		t.Run(tt.name, func(t *testing.T) {
+			// create a test secret
 			cso, err := secrets.CreateSecret(&createInput)
 			if err != nil {
 				t.Error("Failed to create secret")
 			}
 			t.Log(cso.ARN)
-			gotSecret, err := secrets.GetSecret(secretId)
+			// get the secret we just created
+			gotSecret, err := secrets.GetSecretString(secretId)
 			if err != nil {
 				t.Error("Failed to unmarshall JSON secret")
 			}

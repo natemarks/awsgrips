@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
+// CreateSecret wrap secretsmanager.CreateSecret
 func CreateSecret(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
@@ -20,8 +21,9 @@ func CreateSecret(secretInput *secretsmanager.CreateSecretInput) (result *secret
 	return result, err
 }
 
-// GetSecret dvbddfb
-func GetSecret(secretId string) (secret string, err error) {
+// GetSecretString wrap secretsmanager.GetSecretValue. Assume we just want the
+// sring from GetSecretValueOutput
+func GetSecretString(secretID string) (secret string, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return "", err
@@ -30,13 +32,13 @@ func GetSecret(secretId string) (secret string, err error) {
 	client := *secretsmanager.NewFromConfig(cfg)
 
 	input := &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(secretId),
+		SecretId: aws.String(secretID),
 	}
 	result, err := client.GetSecretValue(context.TODO(), input)
 	return *result.SecretString, err
 }
 
-// DeleteSecret
+// DeleteSecret wrap secretsmanager.DeleteSecret
 func DeleteSecret(input *secretsmanager.DeleteSecretInput) (output *secretsmanager.DeleteSecretOutput, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
