@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
 )
 
 // CreateSecret wrap secretsmanager.CreateSecret
@@ -49,4 +50,32 @@ func DeleteSecret(input *secretsmanager.DeleteSecretInput) (output *secretsmanag
 
 	output, err = client.DeleteSecret(context.TODO(), input)
 	return output, err
+}
+
+// ListSecrets Use ListSecretsInput to get a slice of secret entries
+// This really just handles the pagination for me
+func ListSecrets(input *secretsmanager.ListSecretsInput) (secretList []types.SecretListEntry, err error) {
+	//var input secretsmanager.ListSecretsInput
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return secretList, err
+	}
+
+	client := *secretsmanager.NewFromConfig(cfg)
+
+	paginator := *secretsmanager.NewListSecretsPaginator(
+		&client,
+		input,
+		// use this syntax to specifiy the page size
+		// func(o *secretsmanager.ListSecretsPaginatorOptions) { o.Limit = 3 },
+	)
+	for paginator.HasMorePages() {
+		output, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			return secretList, err
+		}
+		secretList = append(secretList, output.SecretList...)
+	}
+
+	return secretList, err
 }

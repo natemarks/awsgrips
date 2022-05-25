@@ -36,6 +36,7 @@ var gotTestData testSecret
 
 // TestSecretFunctions create/read/delete a JSON string secret
 func TestSecretFunctions(t *testing.T) {
+	var listInput secretsmanager.ListSecretsInput
 	tests := []struct {
 		name       string
 		wantSecret testSecret
@@ -88,6 +89,13 @@ func TestSecretFunctions(t *testing.T) {
 			if gotTestData != testSecretData {
 
 				t.Errorf("GetSecret() = %v, want %v", gotSecret, tt.wantSecret)
+			}
+			listOutput, err := secrets.ListSecrets(&listInput)
+			if err != nil {
+				t.Error("Error listing secrets")
+			}
+			if len(listOutput) == 0 {
+				t.Error("zero secrets found")
 			}
 			// cleanup test secret
 			_, err = secrets.DeleteSecret(&deleteInput)
