@@ -51,7 +51,7 @@ func TestSecretFunctions(t *testing.T) {
 	for _, tt := range tests {
 		now := time.Now()
 		secretId := fmt.Sprintf("awsgrips-secret-test-%s", fmt.Sprint(now.UnixMilli()))
-		
+
 		// marshall test data object
 		testSecret, err := json.Marshal(testSecretData)
 		if err != nil {
