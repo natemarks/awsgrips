@@ -8,7 +8,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
-	"github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
 	"github.com/natemarks/awsgrips/secrets"
 )
 
@@ -37,6 +36,7 @@ var gotTestData testSecret
 
 // TestSecretFunctions create/read/delete a JSON string secret
 func TestSecretFunctions(t *testing.T) {
+	var listInput secretsmanager.ListSecretsInput
 	tests := []struct {
 		name       string
 		wantSecret testSecret
@@ -51,7 +51,7 @@ func TestSecretFunctions(t *testing.T) {
 	for _, tt := range tests {
 		now := time.Now()
 		secretId := fmt.Sprintf("awsgrips-secret-test-%s", fmt.Sprint(now.UnixMilli()))
-
+		
 		// marshall test data object
 		testSecret, err := json.Marshal(testSecretData)
 		if err != nil {
@@ -90,42 +90,17 @@ func TestSecretFunctions(t *testing.T) {
 
 				t.Errorf("GetSecret() = %v, want %v", gotSecret, tt.wantSecret)
 			}
+			listOutput, err := secrets.ListSecrets(&listInput)
+			if err != nil {
+				t.Error("Error listing secrets")
+			}
+			if len(listOutput) == 0 {
+				t.Error("zero secrets found")
+			}
 			// cleanup test secret
 			_, err = secrets.DeleteSecret(&deleteInput)
 			if err != nil {
 				t.Error("failed to delete test secret")
-			}
-		})
-	}
-}
-
-func TestListSecrets(t *testing.T) {
-
-	type args struct {
-		input *secretsmanager.ListSecretsInput
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{name: "valid",
-			args: args{
-				input: &secretsmanager.ListSecretsInput{
-					Filters:    []types.Filter{},
-					MaxResults: 0,
-					NextToken:  nil,
-					SortOrder:  "",
-				},
-			},
-			wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := secrets.ListSecrets(tt.args.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ListSecrets() error = %v, wantErr %v", err, tt.wantErr)
-				return
 			}
 		})
 	}
