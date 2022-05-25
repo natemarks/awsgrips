@@ -52,35 +52,24 @@ func DeleteSecret(input *secretsmanager.DeleteSecretInput) (output *secretsmanag
 	return output, err
 }
 
-
-func ListSecrets() (secretList []types.SecretListEntry, err error) {
-	//var input secretsmanager.ListSecretsInput 
+// ListSecrets Use ListSecretsInput to get a slice of secret entries
+// This really just handles the pagination for me
+func ListSecrets(input *secretsmanager.ListSecretsInput) (secretList []types.SecretListEntry, err error) {
+	//var input secretsmanager.ListSecretsInput
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return secretList, err
 	}
 
 	client := *secretsmanager.NewFromConfig(cfg)
-	input := &secretsmanager.ListSecretsInput{
-		Filters: []types.Filter{
-			{
-				Key:   "tag-key",
-				Values: []string{"purpose"},
-			},
-			{
-				Key:   "tag-value",
-				Values: []string{"postgr8_test_fixture"},
-			},
-		},
-	}
-
 
 	paginator := *secretsmanager.NewListSecretsPaginator(
 		&client,
 		input,
-		func(o *secretsmanager.ListSecretsPaginatorOptions){o.Limit=3},
-)
-	for paginator.HasMorePages(){
+		// use this syntax to specifiy the page size
+		// func(o *secretsmanager.ListSecretsPaginatorOptions) { o.Limit = 3 },
+	)
+	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(context.TODO())
 		if err != nil {
 			return secretList, err

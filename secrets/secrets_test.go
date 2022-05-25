@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
+	"github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
 	"github.com/natemarks/awsgrips/secrets"
 )
 
@@ -99,17 +100,29 @@ func TestSecretFunctions(t *testing.T) {
 }
 
 func TestListSecrets(t *testing.T) {
+
+	type args struct {
+		input *secretsmanager.ListSecretsInput
+	}
 	tests := []struct {
-		name           string
-		wantErr        bool
+		name    string
+		args    args
+		wantErr bool
 	}{
 		{name: "valid",
-		wantErr: false,
-	},
+			args: args{
+				input: &secretsmanager.ListSecretsInput{
+					Filters:    []types.Filter{},
+					MaxResults: 0,
+					NextToken:  nil,
+					SortOrder:  "",
+				},
+			},
+			wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := secrets.ListSecrets()
+			_, err := secrets.ListSecrets(tt.args.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ListSecrets() error = %v, wantErr %v", err, tt.wantErr)
 				return
