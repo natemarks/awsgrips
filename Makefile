@@ -59,20 +59,24 @@ shorttest: ## run test that don't require deployed resources
 test:
 	go test -v ./...
 
+static: ## run fmt, vet, goimports, gocyclo
+	( \
+			 gofmt -w  -s .; \
+			 test -z "$$(go vet ./...)"; \
+			 go install golang.org/x/tools/cmd/goimports@latest; \
+			 goimports -w .; \
+			 go install github.com/fzipp/gocyclo/cmd/gocyclo@latest; \
+			 test -z "$$(gocyclo -over 25 .)"; \
+			 go install honnef.co/go/tools/cmd/staticcheck@latest ; \
+			 staticcheck ./... ; \
+    )
+
 lint:  ##  run golint
 	( \
 			 go install golang.org/x/lint/golint@latest; \
-			 golint ./...; \
+			 test -z "$$(golint ./...)"; \
     )
 
-
-static: ## run black and pylint
-	( \
-			 gofmt -w  -s .; \
-			 test -z $(go vet ./...); \
-			 goimports -w .; \
-			 test -z $(gocyclo -over 25 .); \
-    )
 
 clean:
 	-@rm ${OUT} ${OUT}-v*

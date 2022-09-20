@@ -9,6 +9,19 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager/types"
 )
 
+// UpdateSecret wrap secretsmanager.UpdateSecret
+func UpdateSecret(secretInput *secretsmanager.UpdateSecretInput) (result *secretsmanager.UpdateSecretOutput, err error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	client := *secretsmanager.NewFromConfig(cfg)
+
+	result, err = client.UpdateSecret(context.TODO(), secretInput)
+	return result, err
+}
+
 // CreateSecret wrap secretsmanager.CreateSecret
 func CreateSecret(secretInput *secretsmanager.CreateSecretInput) (result *secretsmanager.CreateSecretOutput, err error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -78,4 +91,42 @@ func ListSecrets(input *secretsmanager.ListSecretsInput) (secretList []types.Sec
 	}
 
 	return secretList, err
+}
+
+// Given a secret Name, return true if a secret with a matching Name is in the list
+func secretNameInList(secretName string, secretList []types.SecretListEntry) bool {
+	for _, s := range secretList {
+		if *s.Name == secretName {
+			return true
+		}
+	}
+	return false
+}
+
+// SecretNameExists Return true if a secret with teh give ID exists
+func SecretNameExists(secretName string) (bool, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return false, err
+	}
+	input := &secretsmanager.ListSecretsInput{}
+	client := *secretsmanager.NewFromConfig(cfg)
+
+	paginator := *secretsmanager.NewListSecretsPaginator(
+		&client,
+		input,
+		// use this syntax to specify the page size
+		// func(o *secretsmanager.ListSecretsPaginatorOptions) { o.Limit = 3 },
+	)
+	for paginator.HasMorePages() {
+		output, err := paginator.NextPage(context.TODO())
+		if err != nil {
+			return false, err
+		}
+		if secretNameInList(secretName, output.SecretList) {
+			return true, err
+		}
+	}
+
+	return false, err
 }
