@@ -5,7 +5,7 @@
 DEFAULT_BRANCH := main
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 PKG := github.com/natemarks/awsgrips
-VERSION := 0.0.3
+VERSION := 0.0.4
 SHELL := /bin/bash
 COMMIT := $(shell git rev-parse HEAD)
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
