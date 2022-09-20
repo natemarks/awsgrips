@@ -61,10 +61,7 @@ func DownloadUrl(location string) (localFile string, err error) {
 		return
 	}
 	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-
-		}
+		_ = Body.Close()
 	}(resp.Body)
 
 	out, err := os.Create(localFile)
@@ -72,10 +69,7 @@ func DownloadUrl(location string) (localFile string, err error) {
 		return
 	}
 	defer func(out *os.File) {
-		err := out.Close()
-		if err != nil {
-
-		}
+		_ = out.Close()
 	}(out)
 
 	// Write the body to file

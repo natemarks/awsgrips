@@ -105,3 +105,30 @@ func TestSecretFunctions(t *testing.T) {
 		})
 	}
 }
+
+func TestSecretNameExists(t *testing.T) {
+	type args struct {
+		secretName string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{name: "sdf", args: args{secretName: "sandbox/biometric/test/credentials"}, want: true, wantErr: false},
+		{name: "sdf", args: args{secretName: "ZZZ/biometric/test/credentials"}, want: false, wantErr: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := secrets.SecretNameExists(tt.args.secretName)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SecretNameExists() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("SecretNameExists() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
